@@ -33,7 +33,9 @@ Why NLL?
 
 #### 3. Softmax is the "Thermostat"
 Softmax turns raw "logits" (scores) into probabilities (sum to 1).
+
 $$\text{softmax}(x_i) = \frac{e^{x_i}}{\sum e^{x_j}}$$
+
 * **Insight:** It creates a **competition**. If one logit rises, the others *must* fall. This "suppression" dynamic is critical for how models make decisions.
 
 #### 4. Regularization = Smoothing
