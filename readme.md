@@ -100,7 +100,7 @@ I also explored why we train on small batches (32 items) instead of the whole da
 Think of it like a teacher grading exams:
 
 * **Full Batch:** You grade all 30,000 students before changing your lesson plan. It's accurate, but you only improve once a semester.
-* **Mini-batch:** You grade 32 random students and immediately adjust the lesson plan. It's noisy and approximate (the "drunk" walk), but you can improve thousands of times faster. Speed wins.
+* **Mini-batch:** You grade 32 random students and immediately adjust the lesson plan. It's noisy and approximate, but you can improve thousands of times faster. Speed wins.
 
 ## Results
 
