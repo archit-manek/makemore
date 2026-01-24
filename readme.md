@@ -6,9 +6,8 @@
 ---
 
 ## Table of Contents
-1. [Part 1: Bigram Language Model (The Foundation)](#part-1-bigram-language-model)
-2. [Part 2: MLP & Embeddings (The Context Upgrade)](#part-2-mlp--embeddings)
-3. [Part 3: Batch Norm & Diagnostics](#part-3-batch-norm--diagnostics)
+1. [Part 1: Bigram Language Model](#part-1-bigram-language-model)
+2. [Part 2: MLP](#part-2-mlp)
 
 ---
 
@@ -21,7 +20,7 @@
 The most fascinating realization was that **Counting** and **Neural Networks** are mathematically identical in this specific case.
 * **Approach A (Counting):** We explicitly count how often 'b' follows 'a' in a table.
 * **Approach B (Neural Net):** We use a single linear layer (`x @ W`).
-* **The Connection:** The Counting approach calculates the global solution instantly (Analytical). The Neural Net approaches that same solution step-by-step (Iterative). We use the Neural Net approach not because it's better for Bigrams, but because the "Counting" approach becomes impossible when you have 10,000 words of context (the table would be too big). The Neural Net scales; the table doesn't.
+* **The Connection:** The Counting approach calculates the global solution instantly (Analytical). The Neural Net approaches that same solution step-by-step (Iterative). We use the Neural Net approach because the "Counting" approach becomes impossible when you have 10,000 words of context (the table would be too big). The Neural Net scales; the table doesn't.
 
 #### 2. The "Loss" Function (Negative Log Likelihood)
 Why NLL?
@@ -69,3 +68,40 @@ reg_loss = loss + 0.1 * (W**2).mean()          # Add regularisation to penalise 
 W.grad = None                                  # Zero out old gradients
 loss.backward()                                # Calculate new gradients
 W.data += -lr * W.grad                         # Update weights (Step down the hill)
+```
+
+## Part 2: MLP
+
+## The Intuition
+
+Instead of just counting which letter likely follows another, this model actually "learns" features about the characters. It looks at a context window (e.g., the previous 3 characters) to predict the 4th.
+
+### 1. The Setup (B, T, C)
+
+The hardest part of this project was understanding the tensor shapes. I realized the data isn't just a flat list; it lives in three dimensions:
+
+* **Batch (B):** The stack of examples we process at once (32 in my case).
+* **Time (T):** How far back we look (the 3 previous characters).
+* **Channels (C):** The information density of each character (the embedding).
+
+### 2. The Flattening
+
+To make the data fit into the neural network, I had to flatten it.
+
+* **The naive way:** Splitting the tensor apart and sticking it back together (using `unbind` and `cat`). This is wasteful because it creates new memory.
+* **The efficient way:** Using `.view()`. This was a big realization, we can just treat the memory block as a different shape without actually moving any data. It’s instantaneous.
+
+### 3. The Classroom Analogy (Mini-batches)
+
+I also explored why we train on small batches (32 items) instead of the whole dataset (30,000 items).
+
+#### This analogy helped me understand it the most:
+
+Think of it like a teacher grading exams:
+
+* **Full Batch:** You grade all 30,000 students before changing your lesson plan. It's accurate, but you only improve once a semester.
+* **Mini-batch:** You grade 32 random students and immediately adjust the lesson plan. It's noisy and approximate (the "drunk" walk), but you can improve thousands of times faster. Speed wins.
+
+## Results
+
+After training for roughly 100,000 steps, I managed to get the loss down to about **2.31**. The model is now generating names that sound surprisingly plausible compared to the random gibberish I started with.
