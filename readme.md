@@ -17,7 +17,7 @@
 
 ### The Core Fascinating Moments
 
-#### 1. Two Paths, Same Destination
+#### 1. Two approaches, same outcome
 The most fascinating realization was that **Counting** and **Neural Networks** are mathematically identical in this specific case.
 * **Approach A (Counting):** We explicitly count how often 'b' follows 'a' in a table.
 * **Approach B (Neural Net):** We use a single linear layer (`x @ W`).
@@ -64,6 +64,7 @@ probs = counts / counts.sum(1, keepdims=True)  # [5, 27] (Normalize rows to sum 
 correct_probs = probs[torch.arange(num), ys]   # [5] vector of probabilities
 loss = -correct_probs.log().mean()             # Scalar float (Average NLL)
 reg_loss = loss + 0.1 * (W**2).mean()          # Add regularisation to penalise extreme weights and for a more uniform distribution
+
 # 3. Backward Pass
 W.grad = None                                  # Zero out old gradients
 loss.backward()                                # Calculate new gradients
